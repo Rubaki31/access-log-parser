@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         int counter = 0;
         ArrayList<Integer> lineslist = new ArrayList<>();
         System.out.println("Введите адрес файла");
@@ -27,22 +27,33 @@ public class Main {
                 FileReader fileReader = new FileReader(path);
                 BufferedReader reader = new BufferedReader(fileReader);
                 String line;
+                int yandexCount = 0;
+                int googleCount = 0;
                 while ((line = reader.readLine()) != null) {
                     int length = line.length();
                     if (length >= 1024) {
                         throw new IOException("Длина строки превышает 1024 символа: " + length);
                     }
                     lineslist.add(length);
+                    String[] parts = line.split(";");
+                    if (parts.length >= 2) {
+                        String fragment = parts[1];
+                        String[] fragment2 = fragment.split("/");
+                        String userAgent = fragment2[0];
+                        if (userAgent.trim().equals("YandexBot")) yandexCount++;
+                        if (userAgent.trim().equals("Googlebot")) googleCount++;
+                    }
                 }
                 System.out.println("общее количество строк в файле= " + lineslist.size());
-                System.out.println("длинa самой длинной строки в файле= " + Collections.max(lineslist));
-                System.out.println("длинa самой короткой строки в файле= " + Collections.min(lineslist));
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                int total = lineslist.size();
+                double yaPercent = (double) yandexCount / total * 100;
+                double goPercent = (double) googleCount / total * 100;
+                System.out.println("yandex= " + yaPercent + "%" + " google= " + goPercent + "%");
+            } catch (IOException ex) {
+                throw new IOException(ex);
             }
         }
     }
 }
+
 
