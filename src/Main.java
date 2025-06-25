@@ -1,6 +1,9 @@
+import alp.LogEntry;
+import alp.Statistics;
+import alp.UserAgent;
+
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class Main {
@@ -43,6 +46,12 @@ public class Main {
                         if (userAgent.trim().equals("YandexBot")) yandexCount++;
                         if (userAgent.trim().equals("Googlebot")) googleCount++;
                     }
+                    LogEntry log = new LogEntry(line);
+                    UserAgent logUA= new UserAgent(log.getUserAgent());
+                    Statistics stat = new Statistics();
+                    stat.addEntry(log);
+
+
                 }
                 System.out.println("общее количество строк в файле= " + lineslist.size());
                 int total = lineslist.size();
@@ -52,6 +61,7 @@ public class Main {
             } catch (IOException ex) {
                 throw new IOException(ex);
             }
+            break;
         }
     }
 }

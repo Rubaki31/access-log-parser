@@ -32,3 +32,5 @@ bin/
 out/
 *.iml/
 /.idea/
+src/ru/
+/src/ru/
