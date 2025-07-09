@@ -1,6 +1,8 @@
 package alp;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class LogEntry {
     final String ip;
@@ -27,9 +29,10 @@ public class LogEntry {
 
     public LogEntry(String line) {
         String [] s= line.split(" ");
-
+        //String [] date = line.split("\\[");
+        this.date=LocalDateTime.parse(s[3].replace("]","").replace("[",""), DateTimeFormatter.ofPattern("dd/MMM/yyyy:HH:mm:ss", Locale.ENGLISH));
         this.ip = s[0];
-        this.date = LocalDateTime.parse(s[3]+s[4]);
+        //this.date = LocalDateTime.parse(s[3]+s[4]);
         this.method =Method.methodSet(s[5].replace("\"",""));
         this.path = s[6] + s[7];
         this.value = s[9];

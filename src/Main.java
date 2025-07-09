@@ -53,6 +53,7 @@ public class Main {
 
 
                 }
+
                 System.out.println("общее количество строк в файле= " + lineslist.size());
                 int total = lineslist.size();
                 double yaPercent = (double) yandexCount / total * 100;
