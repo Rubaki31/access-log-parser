@@ -32,6 +32,7 @@ public class Main {
                 String line;
                 int yandexCount = 0;
                 int googleCount = 0;
+                Statistics stat = new Statistics();
                 while ((line = reader.readLine()) != null) {
                     int length = line.length();
                     if (length >= 1024) {
@@ -48,12 +49,12 @@ public class Main {
                     }
                     LogEntry log = new LogEntry(line);
                     UserAgent logUA= new UserAgent(log.getUserAgent());
-                    Statistics stat = new Statistics();
                     stat.addEntry(log);
 
 
-                }
 
+                }
+                System.out.println(stat.getTrafficRate());
                 System.out.println("общее количество строк в файле= " + lineslist.size());
                 int total = lineslist.size();
                 double yaPercent = (double) yandexCount / total * 100;
