@@ -1,11 +1,16 @@
 package alp;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public class Statistics {
-    long totalTraffic;
-    LocalDateTime minTime;
-    LocalDateTime maxTime;
+    private long totalTraffic;
+    private LocalDateTime minTime;
+    private LocalDateTime maxTime;
+    private final HashSet <String> sites = new HashSet<>();
+    private final HashMap<String,Integer> oses = new HashMap<>();
 
     public Statistics() {
         this.totalTraffic = 0;
@@ -23,6 +28,16 @@ public class Statistics {
         if(dateTrafic.isAfter(maxTime)){
             maxTime=dateTrafic;
         }
+        if(entry.code==200){
+            sites.add(String.valueOf(entry.method));
+        }
+        UserAgent ua  = new UserAgent(entry.userAgent);
+        String os = ua.getOs();
+        if (oses.containsKey(os)){
+            oses.put(os,oses.get(os)+1);
+        } else {
+            oses.put(os,1);
+        }
     }
     public int getTrafficRate (){
         int rate = 0;
@@ -32,12 +47,22 @@ public class Statistics {
         rate = Math.toIntExact(totalTraffic / diffHours);
         return rate;
     }
+    public HashMap<String,Double> osShares(){
+        int total = 0;
+        for (int count: oses.values()){
+            total += count;
+        }
+        for (Map.Entry<String,Integer> entry: oses.entrySet()){
+            String os1 = entry.getKey();
+            int count = entry.getValue();
+            double shares = (double) count/total;
+            osShares().put(os1,shares);
+        }
 
-    public LocalDateTime getMaxTime() {
-        return maxTime;
+        return osShares();
     }
 
-    public long getTotalTraffic() {
-        return totalTraffic;
+    public HashSet<String> getSites() {
+        return sites;
     }
 }
