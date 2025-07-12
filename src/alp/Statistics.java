@@ -32,10 +32,10 @@ public class Statistics {
             maxTime = dateTrafic;
         }
         if (entry.code == 200) {
-            sites.add(String.valueOf(entry.method));
+            sites.add(entry.path);
         }
         if (entry.code == 404) {
-            notSites.add(String.valueOf(entry.method));
+            notSites.add(entry.path);
         }
         UserAgent ua = new UserAgent(entry.userAgent);
         String os = ua.getOs();
@@ -62,7 +62,8 @@ public class Statistics {
         return rate;
     }
 
-    public HashMap<String, Double> osShares() {
+    public HashMap<String, Double> getOsShares() {
+        HashMap<String,Double> osShares = new HashMap<>();
         int total = 0;
         for (int count : oses.values()) {
             total += count;
@@ -71,12 +72,13 @@ public class Statistics {
             String os1 = entry.getKey();
             int count = entry.getValue();
             double shares = (double) count / total;
-            osShares().put(os1, shares);
+            osShares.put(os1, shares);
         }
 
-        return osShares();
+        return osShares;
     }
-    public HashMap<String,Double>browserShares(){
+    public HashMap<String,Double>getBrowserShares(){
+        HashMap<String,Double> browserShares = new HashMap<>();
         int total = 0;
         for (int count:browsers.values()){
             total+=count;
@@ -85,12 +87,16 @@ public class Statistics {
             String br= entry.getKey();
             int count = entry.getValue();
             double shares= (double) count/total;
-            browserShares().put(br,shares);
+            browserShares.put(br,shares);
         }
-        return browserShares();
+        return browserShares;
     }
 
     public HashSet<String> getSites() {
         return sites;
+    }
+
+    public HashSet<String> getNotSites() {
+        return notSites;
     }
 }
