@@ -14,12 +14,15 @@ public class Statistics {
     private final HashMap<String, Integer> oses = new HashMap<>();
     private final HashSet<String> notSites = new HashSet<>();
     private final HashMap<String, Integer> browsers = new HashMap<>();
+    private final HashMap<String, Integer> users = new HashMap<>();
+    private int counter;
+    private int errorReq;
 
     public Statistics() {
         this.totalTraffic = 0;
         this.minTime = LocalDateTime.MAX;
         this.maxTime = LocalDateTime.MIN;
-        //this.entryCount = 0;
+        this.counter = 0;
     }
 
     public void addEntry(LogEntry entry) {
@@ -37,6 +40,7 @@ public class Statistics {
         if (entry.code == 404) {
             notSites.add(entry.path);
         }
+        if(entry.code>=400 &&entry.code<=520){errorReq++;}
         UserAgent ua = new UserAgent(entry.userAgent);
         String os = ua.getOs();
         String browser = ua.getBrowser();
@@ -50,6 +54,14 @@ public class Statistics {
         } else {
             browsers.put(browser, 1);
         }
+        if(!ua.isBot()){
+           if(users.containsKey(entry.ip)){
+               users.put(entry.ip,users.get(entry.ip)+1);
+           }else {
+               users.put(entry.ip,1);
+           }
+            counter++;
+        }
 
     }
 
@@ -60,6 +72,20 @@ public class Statistics {
         long diffHours = duration.toHours();
         rate = Math.toIntExact(totalTraffic / diffHours);
         return rate;
+    }
+    public double getUsersRate(){
+
+        long hours = Duration.between(minTime, maxTime).toHours();
+        return (double) counter / hours;
+
+    }
+    public double getErrorsPerHour(){
+        long hours = Duration.between(minTime,maxTime).toHours();
+        return (double) errorReq/hours;
+    }
+    public double getVisitPerUser(){
+        int unique = users.size();
+        return (double) counter/unique;
     }
 
     public HashMap<String, Double> getOsShares() {

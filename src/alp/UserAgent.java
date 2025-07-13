@@ -5,10 +5,16 @@ public class UserAgent {
 
     final String browser;
     final String os;
+    final boolean bot;
 
     public UserAgent(String userAgent) {
         this.os = osParser(userAgent);
         this.browser = browserParser(userAgent);
+        this.bot=isBot(userAgent);
+    }
+
+    public boolean isBot() {
+        return bot;
     }
 
     public String getBrowser() {
@@ -46,7 +52,7 @@ public class UserAgent {
             return "Edge";
         } else if (userAgent.contains("Mobile")) {
             return "Safari";
-        } else if (userAgent.contains("Googlebot") || userAgent.contains("Bot")||userAgent.contains("YandexAccessibilityBot")) {
+        } else if (userAgent.contains("Googlebot") || userAgent.contains("Bot") || userAgent.contains("YandexAccessibilityBot")) {
             return "Crawler";
         } else if (userAgent.contains("OPR")) {
             return "Opera";
@@ -57,6 +63,9 @@ public class UserAgent {
         } else return "other";
     }
 
+    private boolean isBot(String userAgent) {
+        return userAgent.toLowerCase().contains("bot");
+    }
 
 
 }
