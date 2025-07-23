@@ -2,9 +2,9 @@ package alp;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
+
+import static java.time.ZoneOffset.UTC;
 
 public class Statistics {
     private long totalTraffic;
@@ -17,6 +17,11 @@ public class Statistics {
     private final HashMap<String, Integer> users = new HashMap<>();
     private int counter;
     private int errorReq;
+    private final HashMap <Integer,Integer> ratePerSec = new HashMap<>();
+    private final HashSet<String> referers = new HashSet<>();
+    private final HashMap<String,Integer> visitsPerUser = new HashMap<>();
+
+
 
     public Statistics() {
         this.totalTraffic = 0;
@@ -28,6 +33,7 @@ public class Statistics {
     public void addEntry(LogEntry entry) {
         this.totalTraffic += Integer.parseInt(entry.value);
         LocalDateTime dateTrafic = entry.date;
+        referers.add(entry.refer.split("/")[2]);
         if (dateTrafic.isBefore(minTime)) {
             minTime = dateTrafic;
         }
@@ -44,6 +50,7 @@ public class Statistics {
         UserAgent ua = new UserAgent(entry.userAgent);
         String os = ua.getOs();
         String browser = ua.getBrowser();
+
         if (oses.containsKey(os)) {
             oses.put(os, oses.get(os) + 1);
         } else {
@@ -60,8 +67,17 @@ public class Statistics {
            }else {
                users.put(entry.ip,1);
            }
+           int secCount= (int) dateTrafic.toEpochSecond(UTC);
+           if(ratePerSec.containsKey(secCount)){
+               ratePerSec.put(secCount,ratePerSec.get(secCount)+1);
+           } else {
+               ratePerSec.put(secCount,1);
+           }
+            visitsPerUser.put(entry.ip,visitsPerUser.getOrDefault(entry.ip,0)+1);
+
             counter++;
         }
+
 
     }
 
@@ -73,6 +89,14 @@ public class Statistics {
         rate = Math.toIntExact(totalTraffic / diffHours);
         return rate;
     }
+    public int getMaxRate(){
+
+        return Collections.max(ratePerSec.values());
+    }
+    public int getMaxVisits(){
+        return Collections.max(visitsPerUser.values());
+    }
+
     public double getUsersRate(){
 
         long hours = Duration.between(minTime, maxTime).toHours();
@@ -124,5 +148,8 @@ public class Statistics {
 
     public HashSet<String> getNotSites() {
         return notSites;
+    }
+    public HashSet<String> getReferers() {
+        return referers;
     }
 }
